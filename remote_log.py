@@ -1,4 +1,9 @@
 #!/usr/bin/env python3
+
+# Capture data from remote Pico over Wi-Fi and save to CSV file.
+# The CSV file will be named with the timestamp of the collection start.
+# J.Beale 6-Oct-2026
+
 import requests
 import json
 import time
@@ -48,7 +53,11 @@ def wait_for_collection_start():
     next_interval = ((now.minute // 10) + 1) * 10
     if next_interval == 60:
         next_interval = 0
-        target = now.replace(hour=now.hour + 1, minute=0, second=0, microsecond=0)
+        # Handle midnight rollover
+        if now.hour == 23:
+            target = (now + datetime.timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
+        else:
+            target = now.replace(hour=now.hour + 1, minute=0, second=0, microsecond=0)
     else:
         target = now.replace(minute=next_interval, second=0, microsecond=0)
 
