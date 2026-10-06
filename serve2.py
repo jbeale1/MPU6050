@@ -3,7 +3,7 @@
 # Pico W MPU-6050 & ADXL313 Data Collection
 # Collects accelerometer data from MPU-6050 and ADXL313 sensors on a Raspberry Pi Pico W
 # Provides a web interface to view the collected data in CSV format and restart the collection process.
-# J.Beale 10-Oct-2026
+# J.Beale 5-Oct-2026
 
 import network
 import socket
@@ -198,7 +198,11 @@ def build_csv():
 def handle_request(request_line):
     global restart_requested
 
-    if 'GET /restart' in request_line:
+    if 'GET /version' in request_line:
+        version_info = '{"version": "2.0", "features": ["dual-sensor", "cooperative-http"], "dual_sensors": ["MPU6050", "ADXL313"]}'
+        return f"HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nContent-Length: {len(version_info)}\r\n\r\n{version_info}"
+
+    elif 'GET /restart' in request_line:
         restart_requested = True
         print("Restart requested by user")
         return "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: 0\r\n\r\n"
@@ -278,4 +282,3 @@ while True:
         add_reading()
 
     time.sleep(0.01)
-  
